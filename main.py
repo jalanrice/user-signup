@@ -18,13 +18,13 @@ import webapp2
 
 def build_page(username, password, verify, email):
     username_label = "<label>Username</label>"
-    username_input = "<input name='username'/>"
+    username_input = "<input name='username' value='%(username)s'/>"
     password_label = "<label>Password</label>"
     password_input = "<input type='password' name='password'/>"
     verify_label = "<label>Verify Password</label>"
     verify_input = "<input type='password' name='verify'/>"
     email_label = "<label>Email (optional)</label>"
-    email_input = "<input name='email'/>"
+    email_input = "<input name='email' value='%(email)s'/>"
     submit = "<input type='submit'/>"
 
     form = ("<form method='post'>" +
@@ -40,16 +40,18 @@ def build_page(username, password, verify, email):
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        content = build_page("", "", "", "")
-        self.response.write(content)
+        username = ""
+        email = ""
+        content = build_page(username="", password="", verify="", email="")
+        self.response.write(content % {"username": username, "email":email})
 
     def post(self):
         username = self.request.get("username")
         password = self.request.get("password")
         verify = self.request.get("verify")
         email = self.request.get("email")
-        content = build_page(username, password, verify, email)
-        self.response.write(content)
+        content = build_page(username="", password="", verify="", email="")
+        self.response.write(content % {"username": username, "email":email})
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
