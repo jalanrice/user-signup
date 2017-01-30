@@ -16,12 +16,13 @@
 #
 import webapp2
 import re
+import cgi
 
 page_header = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>FlickList</title>
+    <title>User Signup</title>
     <style type="text/css">
         .error {
             color: red;
@@ -29,9 +30,7 @@ page_header = """
     </style>
 </head>
 <body>
-    <h1>
-        <a href="/">Signup</a>
-    </h1>
+    <h1>Signup</h1>
 """
 
 # html boilerplate for the bottom of every page
@@ -42,32 +41,6 @@ page_footer = """
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 
-def build_page(username, password, verify, email):
-    username_label = "<label>Username</label>"
-    username_input = "<input name='username' value='%(username)s'/>"
-    password_label = "<label>Password</label>"
-    password_input = "<input type='password' name='password'/>"
-    verify_label = "<label>Verify Password</label>"
-    verify_input = "<input type='password' name='verify'/>"
-    email_label = "<label>Email (optional)</label>"
-    email_input = "<input name='email' value='%(email)s'/>"
-    submit = "<input type='submit'/>"
-
-    # if we have an error, make a <span> to display it
-    error = self.request.get("error")
-    error_element = "<p class='error'>" + cgi.escape(error, quote=True) +
-                    "</p>" if error else ""
-
-    form = ("<form method='post'>" +
-            username_label + username_input + error_element + "<br>" +
-            password_label + password_input + error_element + "<br>" +
-            verify_label + verify_input + error_element + "<br>" +
-            email_label + email_input + error_element + "<br>" +
-            submit + "</form>")
-
-    header = "<h1>Signup</h1>"
-
-    return header + form
 
 def valid_username(username):
     return re.match(r"^[a-zA-Z0-9_-]{3,20}$", username)
@@ -81,21 +54,50 @@ def valid_email(email):
     return valid_email
 
 
+
 # test
 class MainHandler(webapp2.RequestHandler):
     def get(self):
+
+        username_label = "<label>Username</label>"
+        username_input = "<input name='username' value='%(username)s'/>"
+        password_label = "<label>Password</label>"
+        password_input = "<input type='password' name='password'/>"
+        verify_label = "<label>Verify Password</label>"
+        verify_input = "<input type='password' name='verify'/>"
+        email_label = "<label>Email (optional)</label>"
+        email_input = "<input name='email' value='%(email)s'/>"
+        submit = "<input type='submit'/>"
+
+        # if we have an error, make a <span> to display it
+        error = self.request.get("error")
+        error_element = ("<p class='error'>" + cgi.escape(error, quote=True) +
+                        "</p>" if error else "")
+
+        form = ("<form method='post'>" +
+                username_label + username_input + error_element + "<br>" +
+                password_label + password_input + error_element + "<br>" +
+                verify_label + verify_input + error_element + "<br>" +
+                email_label + email_input + error_element + "<br>" +
+                submit + "</form>")
+
+        content = page_header + form + page_footer
         username = ""
         email = ""
-        content = build_page(username="", password="", verify="", email="")
         self.response.write(content % {"username": username, "email":email})
+
 
     def post(self):
         username = self.request.get("username")
         password = self.request.get("password")
         verify = self.request.get("verify")
         email = self.request.get("email")
-        content = build_page(username="", password="", verify="", email="")
-        self.response.write(content % {"username": username, "email":email})
+        content = "<h1>Welcome, " + username + "!</h1>"
+        self.response.write(content)
+
+
+
+
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
