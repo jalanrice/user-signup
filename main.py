@@ -15,6 +15,32 @@
 # limitations under the License.
 #
 import webapp2
+import re
+
+page_header = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FlickList</title>
+    <style type="text/css">
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        <a href="/">Signup</a>
+    </h1>
+"""
+
+# html boilerplate for the bottom of every page
+page_footer = """
+</body>
+</html>
+"""
+
+USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 
 def build_page(username, password, verify, email):
     username_label = "<label>Username</label>"
@@ -27,17 +53,35 @@ def build_page(username, password, verify, email):
     email_input = "<input name='email' value='%(email)s'/>"
     submit = "<input type='submit'/>"
 
+    # if we have an error, make a <span> to display it
+    error = self.request.get("error")
+    error_element = "<p class='error'>" + cgi.escape(error, quote=True) +
+                    "</p>" if error else ""
+
     form = ("<form method='post'>" +
-            username_label + username_input + "<br>" +
-            password_label + password_input + "<br>" +
-            verify_label + verify_input + "<br>" +
-            email_label + email_input + "<br>" +
+            username_label + username_input + error_element + "<br>" +
+            password_label + password_input + error_element + "<br>" +
+            verify_label + verify_input + error_element + "<br>" +
+            email_label + email_input + error_element + "<br>" +
             submit + "</form>")
 
     header = "<h1>Signup</h1>"
 
     return header + form
 
+def valid_username(username):
+    return re.match(r"^[a-zA-Z0-9_-]{3,20}$", username)
+
+def valid_password(password):
+    #TODO write test
+    return valid_password
+
+def valid_email(email):
+    #TODO write test
+    return valid_email
+
+
+# test
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         username = ""
