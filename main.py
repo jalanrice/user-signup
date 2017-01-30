@@ -70,16 +70,25 @@ class MainHandler(webapp2.RequestHandler):
         email = ""
 
         # if we have an error, make a <span> to display it
-        error = self.request.get("error")
-        error_element = ("<span class='error'>" + cgi.escape(error, quote=True) +
-                        "</span>" if error else "")
+        error1 = self.request.get("error1")
+        error_element1 = ("<span class='error'>" + error1 +
+                        "</span>" if error1 else "")
+        error2 = self.request.get("error2")
+        error_element2 = ("<span class='error'>" + error2 +
+                        "</span>" if error2 else "")
+        error3 = self.request.get("error3")
+        error_element3 = ("<span class='error'>" + error3 +
+                        "</span>" if error3 else "")
+        error4 = self.request.get("error4")
+        error_element4 = ("<span class='error'>" + error4 +
+                        "</span>" if error4 else "")
 
         form = ("<form method='post'>" +
                 header +
-                username_label + username_input + error_element + "<br>" +
-                password_label + password_input + error_element + "<br>" +
-                verify_label + verify_input + error_element + "<br>" +
-                email_label + email_input + error_element + "<br>" +
+                username_label + username_input + error_element1 + "<br>" +
+                password_label + password_input + error_element2 + "<br>" +
+                verify_label + verify_input + error_element3 + "<br>" +
+                email_label + email_input + error_element4 + "<br>" +
                 submit + "</form>")
 
         content = page_header + form + page_footer
@@ -91,12 +100,50 @@ class MainHandler(webapp2.RequestHandler):
         password = self.request.get("password")
         verify = self.request.get("verify")
         email = self.request.get("email")
+        are_errors = False
+        error_num = 0
+        errors = ""
+
+        if not valid_username(username):
+            are_errors = True
+            error1 = " That's not a valid username"
+            if error_num == 0:
+                errors = ("/?error1=" + error1)
+                error_num += 1
+            else:
+                errors = errors + "&error1=" + error1
+
+        if not valid_password(password):
+            are_errors = True
+            error2 = " That wasn't a valid password"
+            if error_num == 0:
+                errors = ("/?error2=" + error2)
+                error_num += 1
+            else:
+                errors = errors + "&error2=" + error2
 
         if password != verify:
-            error = " Your passwords didn't match."
-            error_num = 3
-            error_escaped = cgi.escape(error, quote=True)
-            self.redirect("/?error=" + error_escaped)
+            are_errors = True
+            error3 = " Your passwords didn't match"
+            if error_num == 0:
+                errors = ("/?error3=" + error3)
+                error_num += 1
+            else:
+                errors = errors + "&error3=" + error3
+
+        if not valid_email(email):
+            are_errors = True
+            error4 = " That's not a valid email"
+            if error_num == 0:
+                errors = ("/?error4=" + error4)
+                error_num += 1
+            else:
+                errors = errors + "&error4=" + error4
+
+
+        if are_errors == True:
+            #self.redirect(errors % {"username": username, "email": email})
+            self.redirect(errors + "&username=" + username + "&email=" + email)
         else:
             self.redirect('/welcome?username=' + username)
 
