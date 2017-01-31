@@ -58,13 +58,13 @@ class MainHandler(webapp2.RequestHandler):
 
         header = "<h1>Signup</h1>"
         username_label = "<label>Username</label>"
-        username_input = "<input name='username' value='%(username)s'/>"
+        username_input = "<input name='username' value='%(username_esc)s'/>"
         password_label = "<label>Password</label>"
         password_input = "<input type='password' name='password'/>"
         verify_label = "<label>Verify Password</label>"
         verify_input = "<input type='password' name='verify'/>"
         email_label = "<label>Email (optional)</label>"
-        email_input = "<input name='email' value='%(email)s'/>"
+        email_input = "<input name='email' value='%(email_esc)s'/>"
         submit = "<input type='submit'/>"
         username = ""
         email = ""
@@ -91,15 +91,22 @@ class MainHandler(webapp2.RequestHandler):
                 email_label + email_input + error_element4 + "<br>" +
                 submit + "</form>")
 
+        username = self.request.get("username")
+        username_esc = cgi.escape(username, quote=True)
+        email = self.request.get("email")
+        email_esc = cgi.escape(email, quote=True)
+
         content = page_header + form + page_footer
-        self.response.write(content % {"username": username, "email":email})
+        self.response.write(content % {"username_esc": username_esc, "email_esc": email_esc})
 
 
     def post(self):
         username = self.request.get("username")
+        username_esc = cgi.escape(username, quote=True)
         password = self.request.get("password")
         verify = self.request.get("verify")
         email = self.request.get("email")
+        email_esc = cgi.escape(email, quote=True)
         are_errors = False
         error_num = 0
         errors = ""
